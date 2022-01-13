@@ -39,7 +39,14 @@ header {
   font-size: 14px;
   margin-top: 10px;
   width: 100%;
-  outline: 1px solid green;
+  // outline: 1px solid green;
+  transition: box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover,
+  &:focus {
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 4px rgba(0, 0, 0, 0.06),
+      1px 4px 6px rgba(0, 0, 0, 0.16);
+  }
 
   @media screen and (min-width: 768px) {
     flex-basis: calc((100% - 40px) / 2);
@@ -70,6 +77,8 @@ header {
   display: flex;
   justify-content: space-between;
   padding: 5px;
+  border: 1px solid #eeeeee;
+  border-top: none;
 }
 
 .info-item {
