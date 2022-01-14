@@ -30,6 +30,7 @@ header {
   display: flex;
   flex-wrap: wrap;
   margin: 0 -10px;
+  // padding: 30px 0;
   // margin-bottom: 40px;
 }
 
@@ -95,7 +96,7 @@ header {
 
 .load-more {
   display: block;
-  margin: 10px auto;
+  margin: 0 auto 30px;
   padding: 10px;
   color: #ffffff;
   background-color: #4C4CFF;

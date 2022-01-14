@@ -24,7 +24,6 @@ export default class ImgApiService {
                 .then(response => {
                     this.imgQuantity = response.totalHits;
                     this.incrementPage();
-                    console.log(this.page);
                     return response.hits;
                 })
     }

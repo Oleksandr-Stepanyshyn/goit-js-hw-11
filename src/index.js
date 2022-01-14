@@ -16,6 +16,7 @@ const loadMoreBtn = new LoadMoreBtn ({
     hidden: false,
 })
 const imgApiServise = new ImgApiService();
+var lightbox = new SimpleLightbox('.photo-card a', { captionsData: 'alt', captionDelay: 250 });
 
 refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
@@ -30,23 +31,40 @@ function onSearch (e) {
     }
     imgApiServise.resetPage();
     clearGallery();
-    loadMoreBtn.show();
     imgApiServise.fetchImg()
         .then(images => {
+
             if (images.length) {
                 totalImagesFound(imgApiServise.imgQuantity);
             }
+
             renderGalleryMarkup(images);
+            loadMoreBtn.show();
+
+            if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
+                loadMoreBtn.hide();
+                Notify.info("We're sorry, but you've reached the end of search results.");
+            }
         })
         .catch(console.log);
+
+        console.log(imgApiServise.imgQuantity);
+        // if (images.length) {
+        //     totalImagesFound(imgApiServise.imgQuantity);
+        // }
 }
 
 function onLoadMore () {
-    loadMoreBtn.disable();
+    loadMoreBtn.hide();
     imgApiServise.fetchImg()
         .then(images => {
             renderGalleryMarkup(images);
-            loadMoreBtn.enable();
+            loadMoreBtn.show();
+
+            if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
+                loadMoreBtn.hide();
+                Notify.info("We're sorry, but you've reached the end of search results.");
+            }
         })
         .catch(console.log);
 }
@@ -59,9 +77,11 @@ function renderGalleryMarkup (images) {
         onFetchError();
         return;
     }
+
     const markup = images.map(img => imgCard(img)).join("");
     refs.gallery.insertAdjacentHTML('beforeend', markup);
-    var lightbox = new SimpleLightbox('.photo-card a', { captionsData: 'alt', captionDelay: 250 });
+    lightbox.refresh();
+    refs.gallery.style.padding = '30px 0';
 }
 
 function onFetchError () {
@@ -70,10 +90,10 @@ function onFetchError () {
 
 function clearGallery (){
     refs.gallery.innerHTML = '';
+    refs.gallery.style.padding = '0';
 }
 
 function totalImagesFound (quantity) {
     Notify.success(`Hooray! We found ${quantity} images.`);
 }
-
 
