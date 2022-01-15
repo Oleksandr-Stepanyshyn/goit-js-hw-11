@@ -1,4 +1,5 @@
-const axios = require('axios');
+// const axios = require('axios');
+// import axios from 'axios';
 import imgCard from './partials/img-card.hbs'
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
@@ -33,17 +34,15 @@ function onSearch (e) {
     clearGallery();
     imgApiServise.fetchImg()
         .then(images => {
-
-            if (images.length) {
-                totalImagesFound(imgApiServise.imgQuantity);
-            }
-
             renderGalleryMarkup(images);
             loadMoreBtn.show();
 
             if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
                 loadMoreBtn.hide();
-                Notify.info("We're sorry, but you've reached the end of search results.");
+            }
+
+            if (images.length) {
+                totalImagesFound(imgApiServise.imgQuantity);
             }
         })
         .catch(console.log);
