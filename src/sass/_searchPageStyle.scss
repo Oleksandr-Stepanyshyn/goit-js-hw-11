@@ -21,9 +21,37 @@ header {
   }
 
 .search-form {
-    padding: 15px 0;
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px 0;
+  margin: 0 auto;
+    
+}
+
+.search-form input {
+  display: block;
+  width: 200px;
+  height: 30px;
+  padding-left: 15px;
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+
+  &:focus,
+  &:not(:placeholder-shown) {
+    border: 1px solid #000;
+  }
+}
+
+.search-form button {
+  margin-left: 10px;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  // height:;
 }
 
 .gallery {
@@ -67,11 +95,6 @@ header {
 
 .card-image {
   flex-grow: 1;
-}
-
-.card-image img{
-  // height: 100%;
-  // flex-grow: 1;
 }
 
 .card-image img {
