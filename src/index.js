@@ -1,6 +1,7 @@
 // const axios = require('axios');
 // import axios from 'axios';
-import imgCard from './partials/img-card.hbs'
+// import imgCard from './partials/img-card.hbs'
+import imgItem from './partials/templates/imgItem.hbs';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -22,51 +23,115 @@ var lightbox = new SimpleLightbox('.photo-card a', { captionsData: 'alt', captio
 refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
 
-function onSearch (e) {
+async function onSearch(e) {
     e.preventDefault();
 
-    imgApiServise.query = e.currentTarget.elements.searchQuery.value.trim();
+    imgApiServise. query = e.currentTarget.elements.searchQuery.value.trim();
 
     if (imgApiServise.query === '') {
         return Notify.warning('Enter a specific request')
-    }
-    imgApiServise.resetPage();
+    };
+    
     clearGallery();
-    imgApiServise.fetchImg()
-        .then(images => {
-            renderGalleryMarkup(images);
-            loadMoreBtn.show();
+    imgApiServise.resetPage();
 
-            if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
-                loadMoreBtn.hide();
-            }
+    try {
+        const images = await imgApiServise.fetchImg();
+        const markup = imgItem(images);
 
-            if (images.length) {
-                totalImagesFound(imgApiServise.imgQuantity);
-            }
-        })
-        .catch(console.log);
+        if (!images.length){
+            loadMoreBtn.hide();
+            clearGallery();
+            onFetchError();
+            return;
+        };
 
-        console.log(imgApiServise.imgQuantity);
-        // if (images.length) {
-        //     totalImagesFound(imgApiServise.imgQuantity);
-        // }
+        renderMarkup(markup);
+        loadMoreBtn.show();
+
+        if (imgApiServise.page === imgApiServise.largestPage) {
+            loadMoreBtn.hide();
+        };
+
+        totalImagesFound(imgApiServise.imgQuantity);
+        
+    } catch (error) {
+        console.dir(error);
+    }
 }
 
-function onLoadMore () {
+async function onLoadMore() {
     loadMoreBtn.hide();
-    imgApiServise.fetchImg()
-        .then(images => {
-            renderGalleryMarkup(images);
-            loadMoreBtn.show();
+    imgApiServise.incrementPage();
+    try {
+        const images = await imgApiServise.fetchImg();
+        const markup = imgItem(images);
+        renderMarkup(markup);
+        loadMoreBtn.show();
 
-            if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
-                loadMoreBtn.hide();
-                Notify.info("We're sorry, but you've reached the end of search results.");
-            }
-        })
-        .catch(console.log);
+        console.log(imgApiServise.page);
+        console.log(imgApiServise.largestPage);
+
+        if (imgApiServise.page === imgApiServise.largestPage) {
+            loadMoreBtn.hide();
+            Notify.info("We're sorry, but you've reached the end of search results.");
+        };
+    } catch (error) {
+        console.dir(error);
+    }
 }
+
+function renderMarkup (markup) {
+    refs.gallery.insertAdjacentHTML('beforeend', markup);
+    lightbox.refresh();
+    refs.gallery.style.padding = '20px 0';
+}
+
+// ================ on  API.thrn().catch()===========================
+
+// function onSearch (e) {
+//     e.preventDefault();
+
+//     imgApiServise. query = e.currentTarget.elements.searchQuery.value.trim();
+
+//     if (imgApiServise.query === '') {
+//         return Notify.warning('Enter a specific request')
+//     };
+    
+//     imgApiServise.resetPage();
+//     clearGallery();
+//     imgApiServise.fetchImg()
+//         .then(images => {
+//             renderGalleryMarkup(images);
+//             loadMoreBtn.show();
+
+//             if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
+//                 loadMoreBtn.hide();
+//             }
+
+//             if (images.length) {
+//                 totalImagesFound(imgApiServise.imgQuantity);
+//             }
+//         })
+//         .catch(console.log);
+// }
+
+// function onLoadMore () {
+//     loadMoreBtn.hide();
+//     imgApiServise.fetchImg()
+//         .then(images => {
+//             renderGalleryMarkup(images);
+//             loadMoreBtn.show();
+
+//             if (imgApiServise.page > Math.ceil(imgApiServise.imgQuantity / 40)) {
+//                 loadMoreBtn.hide();
+//                 Notify.info("We're sorry, but you've reached the end of search results.");
+//             }
+//         })
+//         .catch(console.log);
+// }
+
+
 
 function renderGalleryMarkup (images) {
 
