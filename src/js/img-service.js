@@ -19,15 +19,24 @@ export default class ImgApiService {
     }
 
     async fetchImg() {
+        
+    // ==================== librery axios =================================
 
-    // ================= write on async/await =============================
-
-        const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&${searchParams}&page=${this.page}`);
-        const data = await response.json();
+        const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&${searchParams}&page=${this.page}`);
+        const data = response.data;
         this.imgQuantity = data.totalHits;
         this.largestPage = Math.ceil(data.totalHits / this.perPage)
         const images = data.hits;
         return images;
+
+    // ================= write on async/await =============================
+
+        // const response = await fetch(`${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&${searchParams}&page=${this.page}`);
+        // const data = await response.json();
+        // this.imgQuantity = data.totalHits;
+        // this.largestPage = Math.ceil(data.totalHits / this.perPage)
+        // const images = data.hits;
+        // return images;
 
     // ================= write on then().catch() =============================
 

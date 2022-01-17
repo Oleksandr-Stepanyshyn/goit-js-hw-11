@@ -1,6 +1,6 @@
 // const axios = require('axios');
 // import axios from 'axios';
-// import imgCard from './partials/img-card.hbs'
+// import imgCard from './partials/templates/img-card.hbs'
 import imgItem from './partials/templates/imgItem.hbs';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
@@ -48,6 +48,7 @@ async function onSearch(e) {
 
         renderMarkup(markup);
         loadMoreBtn.show();
+        scrollDown();
 
         if (imgApiServise.page === imgApiServise.largestPage) {
             loadMoreBtn.hide();
@@ -68,9 +69,7 @@ async function onLoadMore() {
         const markup = imgItem(images);
         renderMarkup(markup);
         loadMoreBtn.show();
-
-        console.log(imgApiServise.page);
-        console.log(imgApiServise.largestPage);
+        scrollDown();
 
         if (imgApiServise.page === imgApiServise.largestPage) {
             loadMoreBtn.hide();
@@ -159,5 +158,16 @@ function clearGallery (){
 
 function totalImagesFound (quantity) {
     Notify.success(`Hooray! We found ${quantity} images.`);
+}
+
+function scrollDown() {
+    const { height: cardHeight } = document
+    .querySelector('.gallery')
+    .firstElementChild.getBoundingClientRect();
+
+    window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+    });
 }
 
