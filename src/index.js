@@ -1,11 +1,11 @@
 // const axios = require('axios');
 // import axios from 'axios';
 // import imgCard from './partials/templates/img-card.hbs'
-import imgItem from './partials/templates/imgItem.hbs';
+import imgItemTpl from './partials/templates/imgItem.hbs';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import SimpleLightbox from "simplelightbox";
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import ImgApiService from './js/img-service';
+import ImgApiService from './js/imgApiService';
 import LoadMoreBtn from './js/load-more-btn';
 import './sass/main.scss';
 
@@ -18,7 +18,7 @@ const loadMoreBtn = new LoadMoreBtn ({
     hidden: false,
 })
 const imgApiServise = new ImgApiService();
-var lightbox = new SimpleLightbox('.photo-card a', { captionsData: 'alt', captionDelay: 250 });
+const lightbox = new SimpleLightbox('.photo-card a', { captionsData: 'alt', captionDelay: 250 });
 
 refs.searchForm.addEventListener('submit', onSearch);
 loadMoreBtn.refs.button.addEventListener('click', onLoadMore);
@@ -28,7 +28,7 @@ async function onSearch(e) {
 
     imgApiServise. query = e.currentTarget.elements.searchQuery.value.trim();
 
-    if (imgApiServise.query === '') {
+    if (!imgApiServise.query) {
         return Notify.warning('Enter a specific request')
     };
     
@@ -36,26 +36,15 @@ async function onSearch(e) {
     imgApiServise.resetPage();
 
     try {
-        const images = await imgApiServise.fetchImg();
-        const markup = imgItem(images);
-
-        if (!images.length){
-            loadMoreBtn.hide();
-            clearGallery();
-            onFetchError();
-            return;
-        };
-
-        renderMarkup(markup);
-        loadMoreBtn.show();
-        scrollDown();
+        await getDataAndRender();
 
         if (imgApiServise.page === imgApiServise.largestPage) {
             loadMoreBtn.hide();
         };
 
-        totalImagesFound(imgApiServise.imgQuantity);
-        
+        if(imgApiServise.imgQuantity) {
+            totalImagesFound(imgApiServise.imgQuantity);
+        };
     } catch (error) {
         console.dir(error);
     }
@@ -65,11 +54,7 @@ async function onLoadMore() {
     loadMoreBtn.hide();
     imgApiServise.incrementPage();
     try {
-        const images = await imgApiServise.fetchImg();
-        const markup = imgItem(images);
-        renderMarkup(markup);
-        loadMoreBtn.show();
-        scrollDown();
+        await getDataAndRender();
 
         if (imgApiServise.page === imgApiServise.largestPage) {
             loadMoreBtn.hide();
@@ -78,6 +63,22 @@ async function onLoadMore() {
     } catch (error) {
         console.dir(error);
     }
+}
+
+async function getDataAndRender() {
+    const images = await imgApiServise.fetchImg();
+    const markup = imgItemTpl(images);
+
+    if (!images.length){
+        loadMoreBtn.hide();
+        clearGallery();
+        onFetchError();
+        return;
+    };
+
+    renderMarkup(markup);
+    loadMoreBtn.show();
+    scrollDown();
 }
 
 function renderMarkup (markup) {
@@ -166,7 +167,7 @@ function scrollDown() {
     .firstElementChild.getBoundingClientRect();
 
     window.scrollBy({
-    top: cardHeight * 10,
+    top: cardHeight * 11,
     behavior: 'smooth',
     });
 }

@@ -23,7 +23,7 @@ export default class ImgApiService {
     // ==================== librery axios =================================
 
         const response = await axios.get(`${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&${searchParams}&page=${this.page}`);
-        const data = response.data;
+        const data = await response.data;
         this.imgQuantity = data.totalHits;
         this.largestPage = Math.ceil(data.totalHits / this.perPage)
         const images = data.hits;
